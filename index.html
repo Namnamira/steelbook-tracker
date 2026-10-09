@@ -11,6 +11,30 @@
 
 <body>
 
+
+<div id="import-screen" style="display:none; text-align:center; padding:20px;">
+    <h2>Restaurer ma collection</h2>
+    <p>Sélectionne ta sauvegarde JSON pour récupérer tes données.</p>
+    <input type="file" id="backup-file" accept=".json,application/json">
+    <button type="button" onclick="choisirSauvegarde()">Importer la sauvegarde</button>
+    <p id="import-message"></p>
+</div>
+
+<div id="login-screen" style="display:none;">
+    <h2>Connexion à ma collection</h2>
+    <input type="email" id="login-email" placeholder="Adresse e-mail">
+
+    
+<div class="password-field">
+    <input type="password" id="login-password" placeholder="Mot de passe">
+    <button type="button" id="toggle-password" aria-label="Afficher le mot de passe">👁</button>
+</div>
+    <button onclick="login()">Se connecter</button>
+    <p id="login-error"></p>
+</div>
+
+<div id="app-content" style="display:none;">
+
     <header>
     <div class="collection-switcher">
     <button id="steelbook-tab">Steelbook</button>
@@ -174,6 +198,10 @@ onclick="closeForm()">Annuler</button>
 
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore-compat.js"></script>  
+</div>
     <script src="script.js"></script>
 
 </body>

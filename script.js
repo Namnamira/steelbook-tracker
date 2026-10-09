@@ -1,3 +1,46 @@
+const firebaseConfig = {
+    apiKey: "AIzaSyCnIdqH2xfnfecwZY_vZI7ay055hMty7rc",
+    authDomain: "steelbook-tracker.firebaseapp.com",
+    projectId: "steelbook-tracker",
+    storageBucket: "steelbook-tracker.firebasestorage.app",
+    messagingSenderId: "477552655118",
+    appId: "1:477552655118:web:f3587ae38f648a98d0b55f"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+function login() {
+    const email = document.getElementById("login-email").value;
+    const password = document.getElementById("login-password").value;
+    const errorMessage = document.getElementById("login-error");
+
+    auth.signInWithEmailAndPassword(email, password)
+        .catch((error) => {
+            errorMessage.textContent = "Connexion impossible. Vérifie tes identifiants.";
+            console.error(error);
+        });
+}
+
+auth.onAuthStateChanged((user) => {
+    const loginScreen = document.getElementById("login-screen");
+    const appContent = document.getElementById("app-content");
+    const importScreen = document.getElementById("import-screen");
+
+    if (importScreen) {
+    importScreen.style.display = user ? "block" : "none";
+}
+
+    if (loginScreen) {
+        loginScreen.style.display = user ? "none" : "block";
+    }
+
+    if (appContent) {
+        appContent.style.display = user ? "block" : "none";
+    }
+});
+
 let editingSteelbookId = null;
 
 function displaySteelbook(steelbookData) {
@@ -391,4 +434,78 @@ function editWishlistItem(item) {
     document.getElementById("wishlist-other").value = item.other;
 
     document.getElementById("wishlist-form-container").style.display = "flex";
+}
+
+
+document.getElementById("toggle-password").addEventListener("click", function () {
+    const password = document.getElementById("login-password");
+    const visible = password.type === "password";
+
+    password.type = visible ? "text" : "password";
+    this.textContent = visible ? "🙈" : "👁";
+    this.setAttribute(
+        "aria-label",
+        visible ? "Masquer le mot de passe" : "Afficher le mot de passe"
+    );
+});
+
+async function importerSauvegarde(sauvegarde) {
+    const user = auth.currentUser;
+
+    if (!user) {
+        alert("Connecte-toi avant d'importer la sauvegarde.");
+        return;
+    }
+
+    if (
+        !sauvegarde ||
+        !Array.isArray(sauvegarde.steelbooks) ||
+        !Array.isArray(sauvegarde.wishlist)
+    ) {
+        alert("Le fichier de sauvegarde n'a pas le format attendu.");
+        return;
+    }
+
+    const confirmation = confirm(
+        "Importer " + sauvegarde.steelbooks.length +
+        " steelbooks et " + sauvegarde.wishlist.length +
+        " souhait(s) dans Firebase ?"
+    );
+
+    if (!confirmation) return;
+
+    const reference = db.collection("users").doc(user.uid).collection("data").doc("collection");
+
+    try {
+        await reference.set({
+            steelbooks: sauvegarde.steelbooks,
+            wishlist: sauvegarde.wishlist
+        });
+
+        alert("Sauvegarde importée dans Firebase !");
+    } catch (error) {
+        console.error(error);
+        alert("Échec de l'import. La sauvegarde d'origine est conservée.");
+    }
+}
+
+async function choisirSauvegarde() {
+    const input = document.getElementById("backup-file");
+    const message = document.getElementById("import-message");
+    const fichier = input.files[0];
+
+    if (!fichier) {
+        message.textContent = "Choisis d'abord ton fichier JSON.";
+        return;
+    }
+
+    try {
+        const texte = await fichier.text();
+        const sauvegarde = JSON.parse(texte);
+
+        await importerSauvegarde(sauvegarde);
+    } catch (error) {
+        console.error(error);
+        message.textContent = "Impossible de lire ce fichier JSON.";
+    }
 }
