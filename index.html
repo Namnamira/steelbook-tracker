@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Collection Tracker</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+    <div class="collection-switcher">
+    <button id="steelbook-tab">Steelbook</button>
+    <button id="wii-tab">Wii</button>
+</div>
+        <nav>
+    <button id="home-button">Accueil</button>
+    <button id="collection-button">Ma collection</button>
+    <button id="wishlist-button">Wishlist</button>
+        </nav>
+    </header>
+
+    <main id="main-content">
+        <section id="home-section">
+            <h2>Accueil</h2>
+
+        <section class="dashboard">
+
+            <div class="stat-card">
+                <span class="stat-number"
+                id="steelbook-count">0</span>
+                <span class="stat-label">Steelbook</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-number" id="wishlist-count">0</span>
+                <span class="stat-label">Wishlist</span>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-number"
+                id="total-spent">0,00 €</span>
+                <span class="stat-label">Dépensé</span>
+            </div>
+
+        </section>
+    </section>
+
+        
+<section class="collection" id="steelbook-section">
+
+    <div class="section-header">
+        <h2>Ma collection steelbook</h2>
+
+        <button class="add-button"
+        onclick="openAddForm()">
+            + Ajouter un Steelbook
+        </button>
+    </div>
+
+    <div class="empty-message">
+        <p>🎬</p>
+        <h3>Aucun Steelbook pour le moment</h3>
+        <p>Ajoute ton premier Steelbook pour commencer ta collection.</p>
+    </div>
+
+    <div id="steelbook-list"></div>
+
+</section>
+
+<section class="collection" id="wishlist-section" style="display: none;">
+
+<div class="section-header">
+    <h2>Ma Wishlist Steelbook</h2>
+
+    <button class="add-button" onclick="openWishlistForm()">
+        + Ajouter une édition
+    </button>
+</div>
+
+<div id="wishlist-list"></div>
+
+</section>
+
+        <section class="collection" id="wii-section" style="display: none;">
+
+    <div class="section-header">
+        <h2>Ma collection Wii</h2>
+    </div>
+
+    <p>Ta collection de jeux Wii arrivera ici !</p>
+
+</section>
+
+    </main>
+
+<div id="wishlist-form-container" class="form-container">
+
+    <div class="form-box">
+
+        <h2 id="wishlist-form-title">Ajouter une édition</h2>
+
+        <label>Titre du film</label>
+        <input type="text" id="wishlist-title" placeholder="Ex : Spider-Man">
+
+        <label>Édition recherchée</label>
+        <input type="text" id="wishlist-edition" placeholder="Ex : Steelbook 4K Fnac">
+
+        <label>Lien Fnac</label>
+        <input type="url" id="wishlist-fnac" placeholder="https://...">
+
+        <label>Lien Amazon</label>
+        <input type="url" id="wishlist-amazon" placeholder="https://...">
+
+        <label>Autre lien</label>
+        <input type="url" id="wishlist-other" placeholder="https://...">
+
+        <button onclick="saveWishlistItem()">Enregistrer</button>
+        <button onclick="closeWishlistForm()">Annuler</button>
+
+    </div>
+
+</div>
+
+
+    <div id="form-container" class="form-container">
+
+        <div class="form-box">
+
+            <h2 id="form-title">Ajouter un Steelbook</h2>
+
+            <label>Titre du film</label>
+            <input type="text" id="title"
+placeholder="Ex : Spider-Man">
+
+            <label>Prix Payé</label>
+        <div class="price-wrapper">
+            <input type="number" id="price"
+placeholder="Ex : 24.99">
+            <span>€</span>
+        </div>
+
+        <label>Date d'achat</label>
+            <input type="date" id="purchase-date">
+
+        <label>État du Steelbook</label>
+        <select id="condition">
+            <option>Neuf</option>
+            <option>Très bon état</option>
+            <option>Bon état</option>
+            <option>État correct</option>
+        </select>
+
+            <label>Acheté sur</label>
+            <select id="store">
+                <option>Fnac</option>
+                <option>Amazon</option>
+                <option>Cultura</option>
+                <option>Vinted</option>
+                <option>Leboncoin</option>
+                <option>Cadeau</option>
+                <option>Autre</option>
+            </select>
+
+            <button
+onclick="addSteelbook()">Ajouter</button>
+            <button
+onclick="closeForm()">Annuler</button>
+
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
