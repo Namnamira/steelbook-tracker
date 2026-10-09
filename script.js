@@ -34,9 +34,14 @@ auth.onAuthStateChanged((user) => {
     if (appContent) {
         appContent.style.display = user ? "block" : "none";
     }
+
+    if (user) {
+        loadSteelbooks();
+    }
 });
 
 let editingSteelbookId = null;
+let editingWishlistId = null;
 
 function displaySteelbook(steelbookData) {
     const steelbookList =
@@ -68,23 +73,46 @@ document.createElement("button");
     deleteButton.textContent =
 "Supprimer";
 
-    deleteButton.onclick = function() 
-{
-        steelbook.remove();
 
-        let steelbooks =
-    JSON.parse(localStorage.getItem("steelbooks")) || [];
+deleteButton.onclick = async function() {
+    const user = auth.currentUser;
 
-    steelbooks =
-steelbooks.filter(function(item) {
-    return item.id !==
-steelbookData.id;
+    if (!user) {
+        alert("Connecte-toi pour supprimer un steelbook.");
+        return;
+    }
+
+    const steelbooks =
+        JSON.parse(localStorage.getItem("steelbooks")) || [];
+
+    const updatedSteelbooks = steelbooks.filter(function(item) {
+        return item.id !== steelbookData.id;
     });
 
-localStorage.setItem("steelbooks",
-JSON.stringify(steelbooks));
-updateStats();
-updateEmptyMessage();
+    try {
+        const reference = db
+            .collection("users")
+            .doc(user.uid)
+            .collection("data")
+            .doc("collection");
+
+        await reference.set({
+            steelbooks: updatedSteelbooks
+        }, { merge: true });
+
+        localStorage.setItem(
+            "steelbooks",
+            JSON.stringify(updatedSteelbooks)
+        );
+
+        steelbook.remove();
+        updateStats();
+        updateEmptyMessage();
+
+    } catch (error) {
+        console.error("Erreur de suppression :", error);
+        alert("Impossible de supprimer le steelbook du cloud. Vérifie ta connexion.");
+    }
 };
 
 steelbook.appendChild(editButton);
@@ -125,101 +153,138 @@ function editSteelbook(steelbookData) {
     openForm();
 }
 
-function addSteelbook() {
-    if (editingSteelbookId !== null) {
-    let steelbooks = JSON.parse(localStorage.getItem("steelbooks")) || [];
 
-    const index = steelbooks.findIndex(function(item) {
-        return item.id === editingSteelbookId;
-    });
+async function addSteelbook() {
+    const user = auth.currentUser;
 
-    if (index !== -1) {
-        steelbooks[index].title = document.getElementById("title").value;
-        steelbooks[index].price = document.getElementById("price").value;
-        steelbooks[index].purchaseDate = document.getElementById("purchase-date").value;
-        steelbooks[index].condition = document.getElementById("condition").value;
-        steelbooks[index].store = document.getElementById("store").value;
+    if (!user) {
+        alert("Connecte-toi pour enregistrer tes steelbooks.");
+        return;
     }
 
-    localStorage.setItem("steelbooks", JSON.stringify(steelbooks));
-    localStorage.setItem("steelbooks", JSON.stringify(steelbooks));
-
-editingSteelbookId = null;
-
-document.getElementById("title").value = "";
-document.getElementById("price").value = "";
-document.getElementById("purchase-date").value = "";
-document.getElementById("condition").selectedIndex = 0;
-document.getElementById("store").selectedIndex = 0;
-document.getElementById("purchase-date").value = "";
-document.getElementById("condition").selectedIndex = 0;
-
-closeForm();
-location.reload();
-return;
-}
     const title = document.getElementById("title").value;
     const price = document.getElementById("price").value;
     const store = document.getElementById("store").value;
     const purchaseDate = document.getElementById("purchase-date").value;
     const condition = document.getElementById("condition").value;
-    const steelbookData = {
-    id: Date.now(),
-    title: title,
-    price: price,
-    store: store,
-    purchaseDate: purchaseDate,
-    condition: condition,
-};
 
-let steelbooks =
-JSON.parse(localStorage.getItem("steelbooks")) || [];
+    let steelbooks =
+        JSON.parse(localStorage.getItem("steelbooks")) || [];
 
-steelbooks.push(steelbookData);
-
-localStorage.setItem("steelbooks",
-JSON.stringify(steelbooks));
-
-displaySteelbook(steelbookData);
-
-updateStats();
-updateEmptyMessage();
-
-document.getElementById("title").value = "";
-document.getElementById("price").value = "";
-document.getElementById("store").selectedIndex = 0;
-
-closeForm();
-}
-
-function loadSteelbooks() {
-    const savedSteelbooks =
-localStorage.getItem("steelbooks");
-
-console.log(savedSteelbooks);
-
-    if (savedSteelbooks) {
-        const steelbooks =
-    JSON.parse(savedSteelbooks);
-
-     console.log(steelbooks);
-
-steelbooks.forEach(function(steelbookData, index) {
-    if (!steelbookData.id){
-        steelbookData.id = Date.now() + index;
-}
-
-    displaySteelbook(steelbookData);
+    if (editingSteelbookId !== null) {
+        const index = steelbooks.findIndex(function(item) {
+            return item.id === editingSteelbookId;
         });
-    if (steelbooks.length > 0) {
-        document.querySelector(".empty-message").style.display = "none";
+
+        if (index !== -1) {
+            steelbooks[index].title = title;
+            steelbooks[index].price = price;
+            steelbooks[index].purchaseDate = purchaseDate;
+            steelbooks[index].condition = condition;
+            steelbooks[index].store = store;
+        }
+    } else {
+        const steelbookData = {
+            id: Date.now(),
+            title: title,
+            price: price,
+            store: store,
+            purchaseDate: purchaseDate,
+            condition: condition
+        };
+
+        steelbooks.push(steelbookData);
     }
 
-localStorage.setItem("steelbooks",
-JSON.stringify(steelbooks));
-updateStats();
-updateEmptyMessage();
-    }      
+    try {
+        const reference = db
+            .collection("users")
+            .doc(user.uid)
+            .collection("data")
+            .doc("collection");
+
+        await reference.set({
+            steelbooks: steelbooks
+        }, { merge: true });
+
+        localStorage.setItem(
+            "steelbooks",
+            JSON.stringify(steelbooks)
+        );
+
+        editingSteelbookId = null;
+
+        document.getElementById("title").value = "";
+        document.getElementById("price").value = "";
+        document.getElementById("purchase-date").value = "";
+        document.getElementById("condition").selectedIndex = 0;
+        document.getElementById("store").selectedIndex = 0;
+
+        const steelbookList =
+            document.getElementById("steelbook-list");
+
+        if (steelbookList) {
+            steelbookList.innerHTML = "";
+        }
+
+        steelbooks.forEach(function(steelbookData) {
+            displaySteelbook(steelbookData);
+        });
+
+        updateStats();
+        updateEmptyMessage();
+        closeForm();
+
+    } catch (error) {
+        console.error("Erreur d'enregistrement :", error);
+        alert("Impossible d'enregistrer le steelbook dans le cloud. Vérifie ta connexion.");
+    }
+}
+
+
+async function loadSteelbooks() {
+    const user = auth.currentUser;
+
+    if (!user) return;
+
+    try {
+        const reference = db
+            .collection("users")
+            .doc(user.uid)
+            .collection("data")
+            .doc("collection");
+
+        const snapshot = await reference.get();
+        const data = snapshot.exists ? snapshot.data() : {};
+
+        const steelbooks = Array.isArray(data.steelbooks)
+            ? data.steelbooks
+            : [];
+
+        const wishlist = Array.isArray(data.wishlist)
+            ? data.wishlist
+            : [];
+
+        localStorage.setItem("steelbooks", JSON.stringify(steelbooks));
+        localStorage.setItem("wishlist", JSON.stringify(wishlist));
+
+        const steelbookList = document.getElementById("steelbook-list");
+        if (steelbookList) {
+            steelbookList.innerHTML = "";
+        }
+
+        steelbooks.forEach(function(steelbookData) {
+            displaySteelbook(steelbookData);
+        });
+
+        displayWishlist();
+        updateStats();
+        updateEmptyMessage();
+
+    } catch (error) {
+        console.error("Erreur de chargement Firestore :", error);
+        alert("Impossible de charger les données depuis le cloud. Vérifie ta connexion.");
+    }
 }
 
 function updateStats() {
@@ -261,7 +326,6 @@ function updateEmptyMessage() {
 }
 
 console.log("Nouveau script chargé");
-loadSteelbooks();
 updateStats();
 
 const lastPage = localStorage.getItem("currentPage") || "home";
@@ -325,9 +389,17 @@ function closeWishlistForm() {
     document.getElementById("wishlist-form-container").style.display = "none";
 }
 
-function saveWishlistItem() {
+
+async function saveWishlistItem() {
+    const user = auth.currentUser;
+
+    if (!user) {
+        alert("Connecte-toi pour enregistrer ta wishlist.");
+        return;
+    }
+
     const item = {
-        id: Date.now(),
+        id: editingWishlistId !== null ? editingWishlistId : Date.now(),
         title: document.getElementById("wishlist-title").value,
         edition: document.getElementById("wishlist-edition").value,
         fnac: document.getElementById("wishlist-fnac").value,
@@ -340,24 +412,47 @@ function saveWishlistItem() {
         return;
     }
 
-   let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+    let wishlist =
+        JSON.parse(localStorage.getItem("wishlist")) || [];
 
-if (editingWishlistId !== null) {
-    wishlist = wishlist.map(function(existingItem) {
-        return existingItem.id === editingWishlistId
-            ? { ...item, id: editingWishlistId }
-            : existingItem;
-    });
+    if (editingWishlistId !== null) {
+        wishlist = wishlist.map(function(existingItem) {
+            return existingItem.id === editingWishlistId
+                ? item
+                : existingItem;
+        });
+    } else {
+        wishlist.push(item);
+    }
 
-    editingWishlistId = null;
-} else {
-    wishlist.push(item);
-}
+    try {
+        const reference = db
+            .collection("users")
+            .doc(user.uid)
+            .collection("data")
+            .doc("collection");
 
-localStorage.setItem("wishlist", JSON.stringify(wishlist));
+        await reference.set({
+            wishlist: wishlist
+        }, { merge: true });
 
-    closeWishlistForm();
-    displayWishlist();
+        localStorage.setItem("wishlist", JSON.stringify(wishlist));
+
+        editingWishlistId = null;
+
+        document.getElementById("wishlist-title").value = "";
+        document.getElementById("wishlist-edition").value = "";
+        document.getElementById("wishlist-fnac").value = "";
+        document.getElementById("wishlist-amazon").value = "";
+        document.getElementById("wishlist-other").value = "";
+
+        closeWishlistForm();
+        displayWishlist();
+
+    } catch (error) {
+        console.error("Erreur d'enregistrement de la wishlist :", error);
+        alert("Impossible d'enregistrer la wishlist dans le cloud. Vérifie ta connexion.");
+    }
 }
 
 function displayWishlist() {
@@ -399,22 +494,47 @@ card.appendChild(editButton);
         const deleteButton = document.createElement("button");
 deleteButton.textContent = "Supprimer";
 
-deleteButton.onclick = function() {
-    let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 
-    wishlist = wishlist.filter(function(wishlistItem) {
+deleteButton.onclick = async function() {
+    const user = auth.currentUser;
+
+    if (!user) {
+        alert("Connecte-toi pour supprimer un élément de la wishlist.");
+        return;
+    }
+
+    const wishlist =
+        JSON.parse(localStorage.getItem("wishlist")) || [];
+
+    const updatedWishlist = wishlist.filter(function(wishlistItem) {
         return wishlistItem.id !== item.id;
     });
 
-    localStorage.setItem("wishlist", JSON.stringify(wishlist));
-    displayWishlist();
+    try {
+        const reference = db
+            .collection("users")
+            .doc(user.uid)
+            .collection("data")
+            .doc("collection");
+
+        await reference.set({
+            wishlist: updatedWishlist
+        }, { merge: true });
+
+        localStorage.setItem(
+            "wishlist",
+            JSON.stringify(updatedWishlist)
+        );
+
+        displayWishlist();
+
+    } catch (error) {
+        console.error("Erreur de suppression de la wishlist :", error);
+        alert("Impossible de supprimer cet élément du cloud. Vérifie ta connexion.");
+    }
 };
 
 card.appendChild(deleteButton);
-    });
-}
-
-displayWishlist();
 
 let editingWishlistId = null;
 
@@ -443,3 +563,5 @@ document.getElementById("toggle-password").addEventListener("click", function ()
         visible ? "Masquer le mot de passe" : "Afficher le mot de passe"
     );
 });
+    })
+}
