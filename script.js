@@ -421,14 +421,18 @@ async function saveWishlistItem() {
         JSON.parse(localStorage.getItem("wishlist")) || [];
 
     if (editingWishlistId !== null) {
-        wishlist = wishlist.map(function(existingItem) {
-            return existingItem.id === editingWishlistId
-                ? item
-                : existingItem;
-        });
+    const index = wishlist.findIndex(function(existingItem) {
+        return String(existingItem.id) === String(editingWishlistId);
+    });
+
+    if (index !== -1) {
+        wishlist[index] = item;
     } else {
         wishlist.push(item);
     }
+} else {
+    wishlist.push(item);
+}
 
     try {
         const reference = db
@@ -552,8 +556,6 @@ deleteButton.onclick = async function() {
 };
 
 card.appendChild(deleteButton);
-
-let editingWishlistId = null;
 
 function editWishlistItem(item) {
     editingWishlistId = item.id;
