@@ -54,6 +54,7 @@ document.createElement("div");
 
     steelbook.innerHTML =
         "<h3>" + steelbookData.title + "</h3>" +
+        "<p>Édition : " + (steelbookData.edition || "Non renseignée") + "</p>" +
         "<p>Prix : " + steelbookData.price + " €</p>" +
         "<p>Date d'achat : " + (steelbookData.purchaseDate ? steelbookData.purchaseDate.split("-").reverse().join("/") : "Non renseignée") + "</p>" +
         "<p>État : " + (steelbookData.condition || "Non renseigné") + "</p>" +
@@ -145,6 +146,7 @@ function editSteelbook(steelbookData) {
 
     document.getElementById("form-title").textContent = "Modifier le Steelbook";
     document.getElementById("title").value = steelbookData.title;
+    document.getElementById("edition").value = steelbookData.edition || "";
     document.getElementById("price").value = steelbookData.price;
     document.getElementById("purchase-date").value = steelbookData.purchaseDate || "";
     document.getElementById("condition").value = steelbookData.condition || "Neuf";
@@ -163,6 +165,7 @@ async function addSteelbook() {
     }
 
     const title = document.getElementById("title").value;
+    const edition = document.getElementById("edition").value;
     const price = document.getElementById("price").value;
     const store = document.getElementById("store").value;
     const purchaseDate = document.getElementById("purchase-date").value;
@@ -178,6 +181,7 @@ async function addSteelbook() {
 
         if (index !== -1) {
             steelbooks[index].title = title;
+            steelbooks[index].edition = edition;
             steelbooks[index].price = price;
             steelbooks[index].purchaseDate = purchaseDate;
             steelbooks[index].condition = condition;
@@ -187,6 +191,7 @@ async function addSteelbook() {
         const steelbookData = {
             id: Date.now(),
             title: title,
+            edition: edition,
             price: price,
             store: store,
             purchaseDate: purchaseDate,
@@ -477,6 +482,18 @@ editButton.onclick = function() {
 };
 
 card.appendChild(editButton);
+
+const collectionButton = document.createElement("button");
+collectionButton.textContent = "Ajouter à ma collection";
+
+collectionButton.onclick = function() {
+    document.getElementById("title").value = item.title || "";
+    document.getElementById("edition").value = item.edition || "";
+
+    openForm();
+};
+
+card.appendChild(collectionButton);
 
         if (item.fnac) {
             card.innerHTML += '<p><a href="' + item.fnac + '" target="_blank">Voir sur Fnac</a></p>';
