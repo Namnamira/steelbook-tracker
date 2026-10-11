@@ -42,6 +42,7 @@ auth.onAuthStateChanged((user) => {
 
 let editingSteelbookId = null;
 let editingWishlistId = null;
+let wishlistItemToAddId = null;
 
 function displaySteelbook(steelbookData) {
     const steelbookList =
@@ -124,6 +125,7 @@ function openAddForm() {
     editingSteelbookId = null;
     document.getElementById("form-title").textContent = "Ajouter un Steelbook";
     document.getElementById("title").value = "";
+    document.getElementById("edition").value = "";
     document.getElementById("price").value = "";
     document.getElementById("purchase-date").value = "";
     document.getElementById("condition").selectedIndex = 0;
@@ -216,6 +218,23 @@ async function addSteelbook() {
             "steelbooks",
             JSON.stringify(steelbooks)
         );
+
+        if (editingSteelbookId === null && wishlistItemToAddId !== null) {
+    const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+
+    const updatedWishlist = wishlist.filter(function(item) {
+        return item.id !== wishlistItemToAddId;
+    });
+
+    await reference.set({
+        wishlist: updatedWishlist
+    }, { merge: true });
+
+    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+
+    wishlistItemToAddId = null;
+    displayWishlist();
+}
 
         editingSteelbookId = null;
 
@@ -340,19 +359,9 @@ document.getElementById("steelbook-tab").onclick = function() {
     selectCollection("steelbook");
 };
 
-document.getElementById("wii-tab").onclick = function() {
-    selectCollection("wii");
-};
-
-function selectCollection(collection) {
-    document.getElementById("steelbook-tab").classList.toggle("active", collection === "steelbook");
-    document.getElementById("wii-tab").classList.toggle("active", collection === "wii");
-
-    document.getElementById("steelbook-section").style.display =
-        collection === "steelbook" ? "block" : "none";
-
-    document.getElementById("wii-section").style.display =
-        collection === "wii" ? "block" : "none";
+function selectCollection() {
+    document.getElementById("steelbook-tab").classList.add("active");
+    document.getElementById("steelbook-section").style.display = "block";
 }
 
 function showPage(page) {
@@ -491,6 +500,9 @@ const collectionButton = document.createElement("button");
 collectionButton.textContent = "Ajouter à ma collection";
 
 collectionButton.onclick = function() {
+    editingSteelbookId = null;
+    wishlistItemToAddId = item.id;
+
     document.getElementById("title").value = item.title || "";
     document.getElementById("edition").value = item.edition || "";
 
