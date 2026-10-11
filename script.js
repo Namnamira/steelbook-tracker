@@ -355,15 +355,6 @@ updateStats();
 const lastPage = localStorage.getItem("currentPage") || "home";
 showPage(lastPage);
 
-document.getElementById("steelbook-tab").onclick = function() {
-    selectCollection("steelbook");
-};
-
-function selectCollection() {
-    document.getElementById("steelbook-tab").classList.add("active");
-    document.getElementById("steelbook-section").style.display = "block";
-}
-
 function showPage(page) {
     localStorage.setItem("currentPage", page);
     document.getElementById("home-section").style.display =
@@ -466,6 +457,7 @@ async function saveWishlistItem() {
 
         closeWishlistForm();
         displayWishlist();
+        updateStats();
 
     } catch (error) {
         console.error("Erreur d'enregistrement de la wishlist :", error);
@@ -560,6 +552,7 @@ deleteButton.onclick = async function() {
         );
 
         displayWishlist();
+        updateStats();
 
     } catch (error) {
         console.error("Erreur de suppression de la wishlist :", error);

@@ -67,8 +67,15 @@ main {
 
 .dashboard {
     display: flex;
-    gap: 20px;
-    margin-bottom: 40 px;
+    justify-content: center;
+    gap: 24px;
+    margin: 0 0 40px 20px;
+    align-items: stretch;
+}
+
+.dashboard > * {
+    flex: 0 1 280px;
+    min-width: 0;
 }
 
 .stat-card {
@@ -284,4 +291,63 @@ main {
     background: transparent;
     color: #d5d9e4;
     border-radius: 8px;
+}
+
+/* En-tête Steelbook Tracker */
+header {
+    text-align: center;
+    padding: 25px 20px;
+}
+
+header h1 {
+    margin: 0 0 8px;
+    font-size: 2.2rem;
+    color: #ffffff;
+}
+
+.header-subtitle {
+    margin: 0 0 25px;
+    color: #bbbbbb;
+    font-size: 1.05rem;
+}
+
+/* Navigation principale */
+header nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+header nav button {
+    padding: 14px 25px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+}
+
+header h1,
+header .header-subtitle,
+header nav {
+    width: 100%;
+    text-align: center;
+}
+
+header nav {
+    margin-top: 10px;
+}
+
+h2 {
+    margin: 25px 0 30px 20px;
+    text-align: center;
 }
