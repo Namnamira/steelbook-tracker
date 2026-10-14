@@ -32,8 +32,8 @@
 
     <nav>
         <button id="home-button">Accueil</button>
-        <button id="collection-button">Ma collection</button>
-        <button id="wishlist-button">Wishlist</button>
+        <button id="collection-button">Ma Collection</button>
+        <button id="wishlist-button">Ma Wishlist</button>
     </nav>
 </header>
 
@@ -67,18 +67,17 @@
 <section class="collection" id="steelbook-section">
 
     <div class="section-header">
-        <h2>Ma collection steelbook</h2>
+        <h2>Ma Collection Steelbook</h2>
 
         <button class="add-button"
         onclick="openAddForm()">
-            + Ajouter un Steelbook
+            + Ajouter un steelbook
         </button>
     </div>
 
     <div class="empty-message">
-        <p>🎬</p>
-        <h3>Aucun Steelbook pour le moment</h3>
-        <p>Ajoute ton premier Steelbook pour commencer ta collection.</p>
+        <h3>Aucun steelbook pour le moment</h3>
+        <p>Ajoute ton premier steelbook pour commencer ta collection.</p>
     </div>
 
     <div id="steelbook-list"></div>
@@ -91,8 +90,13 @@
     <h2>Ma Wishlist Steelbook</h2>
 
     <button class="add-button" onclick="openWishlistForm()">
-        + Ajouter une édition
+        + Ajouter un steelbook
     </button>
+</div>
+
+<div class="empty-message">
+    <h3>Ta wishlist est vide</h3>
+    <p>Ajoute des steelbooks à ta wishlist pour retrouver facilement ceux qui te font envie.</p>
 </div>
 
 <div id="wishlist-list"></div>
@@ -134,7 +138,7 @@
 
         <div class="form-box">
 
-            <h2 id="form-title">Ajouter un Steelbook</h2>
+            <h2 id="form-title">Ajouter un steelbook</h2>
 
             <label>Titre du film</label>
             <input type="text" id="title"
@@ -187,6 +191,23 @@ onclick="closeForm()">Annuler</button>
     <script src="https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore-compat.js"></script>  
 </div>
     <script src="script.js"></script>
+
+    <div id="delete-modal" class="delete-modal">
+    <div class="delete-modal-content">
+        <h2>Supprimer ce Steelbook ?</h2>
+        <p id="delete-modal-message">
+            Veux-tu vraiment supprimer ce steelbook de ta collection ?
+        </p>
+        <p class="delete-modal-warning">
+            Cette action ne pourra pas être annulée.
+        </p>
+
+        <div class="delete-modal-buttons">
+            <button id="cancel-delete">Annuler</button>
+            <button id="confirm-delete">Oui, supprimer</button>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

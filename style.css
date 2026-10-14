@@ -124,18 +124,25 @@ main {
 
 .empty-message {
     text-align: center;
-    padding: 50px 20px;
-    color: #aaaaaa;
-}
-
-.empty-message p:fisrt-child {
-    font-size: 40px;
-    margin-bottom: 15px;
+    padding: 45px 20px;
+    margin: 10px 0;
+    background-color: #202020;
+    border: 1px dashed #444444;
+    border-radius: 10px;
+    color: #bdbdbd;
 }
 
 .empty-message h3 {
-    color: white;
-    margin-bottom: 10px;
+    color: #ffffff;
+    font-size: 21px;
+    margin-bottom: 12px;
+}
+
+.empty-message p {
+    color: #bdbdbd;
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 0;
 }
 
 .form-container {
@@ -224,12 +231,10 @@ main {
 }
 
 .steelbook-card p {
-    color: #aaaaaa;
+    color: #c0c0c0;
     margin-bottom: 2px;
 }
 
-
-/* Écran de connexion */
 #login-screen {
     width: 90%;
     max-width: 400px;
@@ -270,7 +275,6 @@ main {
     font-size: 16px;
 }
 
-
 .password-field {
     position: relative;
     width: 100%;
@@ -293,7 +297,6 @@ main {
     border-radius: 8px;
 }
 
-/* En-tête Steelbook Tracker */
 header {
     text-align: center;
     padding: 25px 20px;
@@ -311,7 +314,6 @@ header h1 {
     font-size: 1.05rem;
 }
 
-/* Navigation principale */
 header nav {
     display: flex;
     justify-content: center;
@@ -350,4 +352,147 @@ header nav {
 h2 {
     margin: 25px 0 30px 20px;
     text-align: center;
+}
+
+.steelbook-card .edit-button,
+.steelbook-card .delete-button {
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 8px;
+}
+
+.steelbook-card .edit-button {
+    background-color: #2878d0;
+}
+
+.steelbook-card .delete-button {
+    background-color: #d93636;
+}
+
+.steelbook-card .edit-button:hover {
+    background-color: #1d61ad;
+}
+
+.steelbook-card .delete-button:hover {
+    background-color: #b92727;
+}
+
+.steelbook-card .collection-add-button {
+    background-color: #333333;
+    color: white;
+    border: 1px solid #555555;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 0 8px 0 0;
+}
+
+.steelbook-card .collection-add-button:hover {
+    background-color: #444444;
+}
+
+.steelbook-card .edit-button,
+.steelbook-card .delete-button,
+.steelbook-card .collection-add-button {
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.steelbook-card .edit-button:hover {
+    background-color: #1d61ad;
+}
+
+.steelbook-card .delete-button:hover {
+    background-color: #b92727;
+}
+
+.steelbook-card .collection-add-button:hover {
+    background-color: #444444;
+}
+
+.delete-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.75);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.delete-modal-content {
+    background: #1c1c1c;
+    border: 1px solid #333333;
+    border-radius: 12px;
+    padding: 25px;
+    width: 100%;
+    max-width: 420px;
+    color: #ffffff;
+    text-align: center;
+    margin: auto;
+}
+
+.delete-modal-content h2 {
+    margin-top: 0;
+    font-size: 21px;
+}
+
+.delete-modal-content p {
+    line-height: 1.6;
+}
+
+.delete-modal-warning {
+    color: #aaaaaa;
+    font-size: 13px;
+}
+
+.delete-modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.delete-modal-buttons button {
+    padding: 9px 14px;
+    border-radius: 6px;
+    border: none;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#cancel-delete {
+    background: #333333;
+    border: 1px solid #555555;
+}
+
+#confirm-delete {
+    background: #d93636;
+}
+.delete-modal {
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.delete-modal-content {
+    margin: 0 auto !important;
+    text-align: center !important;
+}
+
+.delete-modal-content h2,
+.delete-modal-content p {
+    text-align: center !important;
+}
+
+.delete-modal-buttons {
+    justify-content: center !important;
+    align-items: center !important;
 }

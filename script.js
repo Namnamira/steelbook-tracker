@@ -64,57 +64,79 @@ document.createElement("div");
 steelbook.style.marginBottom = "30px";
 steelbookList.appendChild(steelbook);
 
-    const editButton = document.createElement("button");
-editButton.textContent = "Modifier";
-editButton.onclick = function() {
-    editSteelbook(steelbookData);
-};
+ const editButton = document.createElement("button");
+    editButton.textContent = "Modifier";
+    editButton.className = "edit-button";
+    editButton.onclick = function() {
+        editSteelbook(steelbookData);
+    };
 
-    const deleteButton =
-document.createElement("button");
-    deleteButton.textContent =
-"Supprimer";
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Supprimer";
+    deleteButton.className = "delete-button";
 
 
-deleteButton.onclick = async function() {
-    const user = auth.currentUser;
+deleteButton.onclick = function() {
+    const modal = document.getElementById("delete-modal");
+    const message = document.getElementById("delete-modal-message");
 
-    if (!user) {
-        alert("Connecte-toi pour supprimer un steelbook.");
-        return;
-    }
+    message.textContent =
+        'Veux-tu vraiment supprimer "' +
+        steelbookData.title +
+        '" de ta collection ?';
 
-    const steelbooks =
-        JSON.parse(localStorage.getItem("steelbooks")) || [];
+    modal.style.display = "flex";
 
-    const updatedSteelbooks = steelbooks.filter(function(item) {
-        return item.id !== steelbookData.id;
-    });
+    const cancelButton = document.getElementById("cancel-delete");
+    const confirmButton = document.getElementById("confirm-delete");
 
-    try {
-        const reference = db
-            .collection("users")
-            .doc(user.uid)
-            .collection("data")
-            .doc("collection");
+    cancelButton.onclick = function() {
+        modal.style.display = "none";
+    };
 
-        await reference.set({
-            steelbooks: updatedSteelbooks
-        }, { merge: true });
+    confirmButton.onclick = async function() {
+        const user = auth.currentUser;
 
-        localStorage.setItem(
-            "steelbooks",
-            JSON.stringify(updatedSteelbooks)
-        );
+        if (!user) {
+            alert("Connecte-toi pour supprimer un steelbook.");
+            modal.style.display = "none";
+            return;
+        }
 
-        steelbook.remove();
-        updateStats();
-        updateEmptyMessage();
+        const steelbooks =
+            JSON.parse(localStorage.getItem("steelbooks")) || [];
 
-    } catch (error) {
-        console.error("Erreur de suppression :", error);
-        alert("Impossible de supprimer le steelbook du cloud. Vérifie ta connexion.");
-    }
+        const updatedSteelbooks = steelbooks.filter(function(item) {
+            return item.id !== steelbookData.id;
+        });
+
+        try {
+            const reference = db
+                .collection("users")
+                .doc(user.uid)
+                .collection("data")
+                .doc("collection");
+
+            await reference.set({
+                steelbooks: updatedSteelbooks
+            }, { merge: true });
+
+            localStorage.setItem(
+                "steelbooks",
+                JSON.stringify(updatedSteelbooks)
+            );
+
+            modal.style.display = "none";
+            steelbook.remove();
+            updateStats();
+            updateEmptyMessage();
+
+        } catch (error) {
+            console.error("Erreur de suppression :", error);
+            modal.style.display = "none";
+            alert("Impossible de supprimer le steelbook du cloud. Vérifie ta connexion.");
+        }
+    };
 };
 
 steelbook.appendChild(editButton);
@@ -466,10 +488,16 @@ async function saveWishlistItem() {
 }
 
 function displayWishlist() {
-    const wishlistList = document.getElementById("wishlist-list");
-    const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+const wishlistList = document.getElementById("wishlist-list");
+const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 
-    wishlistList.innerHTML = "";
+wishlistList.innerHTML = "";
+
+const emptyMessage = document.querySelector("#wishlist-section .empty-message");
+
+if (emptyMessage) {
+    emptyMessage.style.display = wishlist.length === 0 ? "block" : "none";
+}
 
     wishlist.forEach(function(item) {
   const card = document.createElement("div");
@@ -480,6 +508,7 @@ card.innerHTML =
     "<p>Édition : " + item.edition + "</p>";
 
 const editButton = document.createElement("button");
+editButton.className = "edit-button";
 editButton.textContent = "Modifier";
 
 editButton.onclick = function() {
@@ -489,6 +518,7 @@ editButton.onclick = function() {
 card.appendChild(editButton);
 
 const collectionButton = document.createElement("button");
+collectionButton.className = "collection-add-button";
 collectionButton.textContent = "Ajouter à ma collection";
 
 collectionButton.onclick = function() {
@@ -517,47 +547,69 @@ card.appendChild(collectionButton);
 
         wishlistList.appendChild(card);
         const deleteButton = document.createElement("button");
-deleteButton.textContent = "Supprimer";
+        deleteButton.className = "delete-button";
+        deleteButton.textContent = "Supprimer";
 
+deleteButton.onclick = function() {
+    const modal = document.getElementById("delete-modal");
+    const message = document.getElementById("delete-modal-message");
 
-deleteButton.onclick = async function() {
-    const user = auth.currentUser;
+    message.textContent =
+        'Veux-tu vraiment supprimer "' +
+        item.title +
+        '" de ta Wishlist ?';
 
-    if (!user) {
-        alert("Connecte-toi pour supprimer un élément de la wishlist.");
-        return;
-    }
+    modal.style.display = "flex";
 
-    const wishlist =
-        JSON.parse(localStorage.getItem("wishlist")) || [];
+    const cancelButton = document.getElementById("cancel-delete");
+    const confirmButton = document.getElementById("confirm-delete");
 
-    const updatedWishlist = wishlist.filter(function(wishlistItem) {
-        return wishlistItem.id !== item.id;
-    });
+    cancelButton.onclick = function() {
+        modal.style.display = "none";
+    };
 
-    try {
-        const reference = db
-            .collection("users")
-            .doc(user.uid)
-            .collection("data")
-            .doc("collection");
+    confirmButton.onclick = async function() {
+        const user = auth.currentUser;
 
-        await reference.set({
-            wishlist: updatedWishlist
-        }, { merge: true });
+        if (!user) {
+            alert("Connecte-toi pour supprimer un élément de la wishlist.");
+            modal.style.display = "none";
+            return;
+        }
 
-        localStorage.setItem(
-            "wishlist",
-            JSON.stringify(updatedWishlist)
-        );
+        const wishlist =
+            JSON.parse(localStorage.getItem("wishlist")) || [];
 
-        displayWishlist();
-        updateStats();
+        const updatedWishlist = wishlist.filter(function(wishlistItem) {
+            return wishlistItem.id !== item.id;
+        });
 
-    } catch (error) {
-        console.error("Erreur de suppression de la wishlist :", error);
-        alert("Impossible de supprimer cet élément du cloud. Vérifie ta connexion.");
-    }
+        try {
+            const reference = db
+                .collection("users")
+                .doc(user.uid)
+                .collection("data")
+                .doc("collection");
+
+            await reference.set({
+                wishlist: updatedWishlist
+            }, { merge: true });
+
+            localStorage.setItem(
+                "wishlist",
+                JSON.stringify(updatedWishlist)
+            );
+
+            modal.style.display = "none";
+            displayWishlist();
+            updateStats();
+
+        } catch (error) {
+            console.error("Erreur de suppression de la wishlist :", error);
+            modal.style.display = "none";
+            alert("Impossible de supprimer cet élément du cloud. Vérifie ta connexion.");
+        }
+    };
 };
 
 card.appendChild(deleteButton);
